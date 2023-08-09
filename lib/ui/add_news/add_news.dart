@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:news_with_push_notification/provider/news_provider.dart';
-import 'package:news_with_push_notification/ui/add_news/colors.dart';
-import 'package:news_with_push_notification/ui/add_news/text_field.dart';
+import 'package:news_with_push_notification/ui/add_news/widgets/popup_menu_button.dart';
+import 'package:news_with_push_notification/ui/ui_utils/text_field.dart';
 import 'package:provider/provider.dart';
 
 class AddNews extends StatefulWidget {
@@ -16,14 +16,11 @@ class AddNews extends StatefulWidget {
 class _AddNewsState extends State<AddNews> {
   ImagePicker picker = ImagePicker();
 
-  String? catID;
-  String? catName;
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        context.read<ProductsProvider>().tozalash();
+        context.read<NewsProvider>().tozalash();
         return true;
       },
       child: Scaffold(
@@ -35,7 +32,7 @@ class _AddNewsState extends State<AddNews> {
           ),
           leading: IconButton(
             onPressed: () {
-              context.read<ProductsProvider>().tozalash();
+              context.read<NewsProvider>().tozalash();
 
               Navigator.pop(context);
             },
@@ -51,12 +48,18 @@ class _AddNewsState extends State<AddNews> {
               child: ListView(
                 padding: const EdgeInsets.all(10),
                 children: [
+                  MyPopupMenuButton(
+                    items: const ['News', 'Technology', 'Medicine', 'Cars'],
+                    initialValue: "Select a Topic",
+                    onChanged: (String newValue) {
+                      print('Selected: $newValue');
+                    },
+                  ),
                   const SizedBox(height: 10),
                   GlobalTextField(
                     hintText: "Add News title",
                     textAlign: TextAlign.start,
-                    controller:
-                        context.read<ProductsProvider>().titleController,
+                    controller: context.read<NewsProvider>().titleController,
                     label: 'title',
                   ),
                   const SizedBox(height: 10),
@@ -64,8 +67,7 @@ class _AddNewsState extends State<AddNews> {
                     hintText: "Add News author",
                     textAlign: TextAlign.start,
                     keyboardType: TextInputType.text,
-                    controller:
-                        context.read<ProductsProvider>().authorController,
+                    controller: context.read<NewsProvider>().authorController,
                     label: 'Author',
                   ),
                   const SizedBox(height: 10),
@@ -73,7 +75,7 @@ class _AddNewsState extends State<AddNews> {
                     hintText: "Add News description",
                     textAlign: TextAlign.start,
                     controller:
-                        context.read<ProductsProvider>().descriptionController,
+                        context.read<NewsProvider>().descriptionController,
                     label: 'Description',
                   ),
                   const SizedBox(height: 10),
@@ -82,8 +84,7 @@ class _AddNewsState extends State<AddNews> {
                     keyboardType: TextInputType.text,
                     hintText: "Add News Content",
                     textAlign: TextAlign.start,
-                    controller:
-                        context.read<ProductsProvider>().contentController,
+                    controller: context.read<NewsProvider>().contentController,
                     label: 'Content',
                   ),
                   const SizedBox(height: 10),
@@ -94,7 +95,7 @@ class _AddNewsState extends State<AddNews> {
                     onPressed: () async {
                       showBottomSheetDialog(context);
                     },
-                    child: context.watch<ProductsProvider>().imageUrl.isEmpty
+                    child: context.watch<NewsProvider>().imageUrl.isEmpty
                         ? const Text(
                             "Select Image",
                             style: TextStyle(color: Colors.white),
@@ -108,12 +109,11 @@ class _AddNewsState extends State<AddNews> {
                               children: [
                                 ...List.generate(
                                     context
-                                        .watch<ProductsProvider>()
+                                        .watch<NewsProvider>()
                                         .imageUrl
                                         .length, (index) {
-                                  String singleImage = context
-                                      .watch<ProductsProvider>()
-                                      .imageUrl;
+                                  String singleImage =
+                                      context.watch<NewsProvider>().imageUrl;
                                   return Container(
                                     padding: const EdgeInsets.all(5),
                                     margin: const EdgeInsets.all(5),
@@ -136,7 +136,7 @@ class _AddNewsState extends State<AddNews> {
               ),
             ),
             Visibility(
-              visible: context.watch<ProductsProvider>().imageUrl.isNotEmpty,
+              visible: context.watch<NewsProvider>().imageUrl.isNotEmpty,
               child: SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -165,11 +165,11 @@ class _AddNewsState extends State<AddNews> {
                         backgroundColor: MaterialStatePropertyAll(Colors.green),
                       ),
                       onPressed: () {
-                        context.read<ProductsProvider>().sendNotification();
+                        context.read<NewsProvider>().sendNotification();
                         widget.callback.call();
                         Navigator.pop(context);
 
-                        context.read<ProductsProvider>().tozalash();
+                        context.read<NewsProvider>().tozalash();
                       },
                       child: const Text("Send News"))),
             ),
@@ -226,9 +226,7 @@ class _AddNewsState extends State<AddNews> {
 
     if (context.mounted) {
       if (xFile != null) {
-        await context
-            .read<ProductsProvider>()
-            .uploadCategoryImage(context, xFile);
+        await context.read<NewsProvider>().uploadCategoryImage(context, xFile);
       }
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
@@ -243,9 +241,7 @@ class _AddNewsState extends State<AddNews> {
     );
     if (context.mounted) {
       if (xFile != null) {
-        await context
-            .read<ProductsProvider>()
-            .uploadCategoryImage(context, xFile);
+        await context.read<NewsProvider>().uploadCategoryImage(context, xFile);
       }
       // ignore: use_build_context_synchronously
       Navigator.pop(context);

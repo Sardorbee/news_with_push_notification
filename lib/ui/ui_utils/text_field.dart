@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_with_push_notification/ui/add_news/colors.dart';
+import 'package:news_with_push_notification/ui/ui_utils/colors.dart';
 
 // ignore: must_be_immutable
 class GlobalTextField extends StatelessWidget {

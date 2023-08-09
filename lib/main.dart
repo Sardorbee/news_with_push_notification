@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:news_with_push_notification/provider/news_provider.dart';
 import 'package:news_with_push_notification/services/notification/fcm.dart';
 import 'package:news_with_push_notification/services/notification/local_notification.dart';
-import 'package:news_with_push_notification/ui/home/home_screen.dart';
+import 'package:news_with_push_notification/ui/tab_bar/tab_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -11,7 +11,7 @@ void main() async {
   await initFirebase();
 
   runApp(ChangeNotifierProvider(
-    create: (context) => ProductsProvider(),
+    create: (context) => NewsProvider(),
     child: const MyApp(),
   ));
 }
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     LocalNotificationService.localNotificationService.init(navigatorKey);
 
     return MaterialApp(
-      home: const HomeScreen(),
+      home: const TabBarScreen(),
       navigatorKey: navigatorKey,
     );
   }

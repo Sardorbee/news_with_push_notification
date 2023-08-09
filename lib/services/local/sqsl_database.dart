@@ -37,6 +37,44 @@ class DatabaseHelper {
         content TEXT
       )
     ''');
+    await db.execute('''
+      CREATE TABLE topic_prefs(
+        topicKey TEXT PRIMARY KEY,
+        isEnabled INTEGER
+      )
+    ''');
+
+    // Initialize the default values for topics
+    await db.insert('topic_prefs', {'topicKey': 'News', 'isEnabled': 1});
+    await db.insert('topic_prefs', {'topicKey': 'Technology', 'isEnabled': 1});
+    await db.insert('topic_prefs', {'topicKey': 'Medicine', 'isEnabled': 1});
+    await db.insert('topic_prefs', {'topicKey': 'Cars', 'isEnabled': 1});
+  }
+
+  Future<void> updateTopicPreference(String topicKey, bool isEnabled) async {
+    final db = await database;
+    await db.update(
+      'topic_prefs',
+      {'topicKey': topicKey, 'isEnabled': isEnabled ? 1 : 0},
+      where: 'topicKey = ?',
+      whereArgs: [topicKey],
+    );
+  }
+
+  Future<bool> getTopicPreference(String topicKey) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'topic_prefs',
+      columns: ['isEnabled'],
+      where: 'topicKey = ?',
+      whereArgs: [topicKey],
+    );
+
+    if (maps.isNotEmpty) {
+      return maps.first['isEnabled'] == 1;
+    } else {
+      return false;
+    }
   }
 
   Future<void> insertProduct(FcmResponseModel news) async {

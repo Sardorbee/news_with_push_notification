@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news_with_push_notification/provider/news_provider.dart';
-import 'package:news_with_push_notification/services/local/sqsl_database.dart';
 import 'package:news_with_push_notification/services/models/fcm_response_model.dart';
 import 'package:news_with_push_notification/ui/add_news/add_news.dart';
+import 'package:news_with_push_notification/ui/home/details/details.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
           "Morning Star",
         ),
       ),
-      body: Consumer<ProductsProvider>(
+      body: Consumer<NewsProvider>(
         builder: (context, newsProvider, _) {
           newsProvider.fetchData();
           final newsData = newsProvider.newsData;
@@ -36,8 +36,14 @@ class _HomeScreenState extends State<HomeScreen> {
               FcmResponseModel news = newsData[index];
 
               return ListTile(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DetailsScreen(fcmResponseModel: news),
+                    )),
                 onLongPress: () {
-                  Provider.of<ProductsProvider>(context, listen: false)
+                  Provider.of<NewsProvider>(context, listen: false)
                       .deleteNews(news.publishedAt);
                 },
                 leading: Image.network(news.imageUrl),
