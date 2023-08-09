@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:news_with_push_notification/services/models/fcm_response_model.dart';
 
 class DetailsScreen extends StatelessWidget {
-  DetailsScreen({super.key, required this.fcmResponseModel});
-  FcmResponseModel fcmResponseModel;
+  DetailsScreen({super.key, this.fcmResponseModel});
+  FcmResponseModel? fcmResponseModel;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,12 +15,14 @@ class DetailsScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Image.network(fcmResponseModel.imageUrl),
-            Text(fcmResponseModel.title),
-            Text(fcmResponseModel.author),
-            Text(fcmResponseModel.publishedAt),
-            Text(fcmResponseModel.description),
-            Text(fcmResponseModel.content),
+            fcmResponseModel?.imageUrl != null
+                ? Image.network(fcmResponseModel!.imageUrl)
+                : const Placeholder(),
+            Text(fcmResponseModel?.title ?? ''),
+            Text(fcmResponseModel?.author ?? ''),
+            Text(fcmResponseModel?.publishedAt ?? ''),
+            Text(fcmResponseModel?.description ?? ''),
+            Text(fcmResponseModel?.content ?? ''),
           ],
         ),
       ),

@@ -12,7 +12,7 @@ Future<void> initFirebase() async {
   await Firebase.initializeApp();
   String? fcmToken = await FirebaseMessaging.instance.getToken();
   debugPrint("FCM USER TOKEN: $fcmToken");
-  await FirebaseMessaging.instance.subscribeToTopic("news");
+  await FirebaseMessaging.instance.subscribeToTopic("News");
 
   // FOREGROUND MESSAGE HANDLING.
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {

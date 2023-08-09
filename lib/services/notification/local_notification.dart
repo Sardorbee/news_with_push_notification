@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:news_with_push_notification/ui/home/details/details.dart';
 // ignore: depend_on_referenced_packages
 import 'package:timezone/data/latest_all.dart' as tz;
 // ignore: depend_on_referenced_packages
@@ -47,12 +48,12 @@ class LocalNotificationService {
       ) {
         //Android
         if (notificationResponse.payload != null) {
-          String? payloadData = notificationResponse.payload;
+          // String? payloadData = notificationResponse.payload;
 
-          // Navigator.push(navigatorKey.currentContext!,
-          //     MaterialPageRoute(builder: (context) {
-          //   return  DynamicViewExample(name: payloadData! );
-          // }));
+          Navigator.push(navigatorKey.currentContext!,
+              MaterialPageRoute(builder: (context) {
+            return  DetailsScreen( );
+          }));
 
           debugPrint('PAYLOAD RESULT------> ${notificationResponse.payload}');
         } else {

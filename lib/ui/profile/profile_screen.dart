@@ -15,6 +15,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
+
+    print('build');
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile Screen"),
@@ -26,12 +29,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             trailing: Consumer<NewsProvider>(
               builder: (context, xxx, child) {
                 xxx.getNewsTopic();
-                xxx.newsTopicSubscription();
 
                 return Switch(
                   value: xxx.newsTopic,
                   onChanged: (value) {
                     _databaseHelper.updateTopicPreference("News", value);
+                    xxx.newsTopicSubscription();
                   },
                 );
               },
@@ -42,12 +45,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             trailing: Consumer<NewsProvider>(
               builder: (context, x, child) {
                 x.gettechnologyTopic();
-                x.technologyTopicSubscription();
 
                 return Switch(
                   value: x.technologyTopic,
                   onChanged: (value) {
                     _databaseHelper.updateTopicPreference("Technology", value);
+                    x.technologyTopicSubscription();
                   },
                 );
               },
@@ -58,12 +61,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             trailing: Consumer<NewsProvider>(
               builder: (context, y, child) {
                 y.getmedicineTopic();
-                y.medicineTopicSubscription();
 
                 return Switch(
                   value: y.medicineTopic,
                   onChanged: (value) {
                     _databaseHelper.updateTopicPreference("Medicine", value);
+                    y.medicineTopicSubscription();
                   },
                 );
               },

@@ -142,6 +142,14 @@ class NewsProvider with ChangeNotifier {
 
   // ___________________________________________________________________________
   // Subscription
+  Future<void> subscribeAll() async {
+    await FirebaseMessaging.instance.subscribeToTopic("News");
+    await FirebaseMessaging.instance.subscribeToTopic("Technology");
+    await FirebaseMessaging.instance.subscribeToTopic("Medicine");
+    await FirebaseMessaging.instance.subscribeToTopic('Cars');
+    notifyListeners();
+  }
+
   Future<void> newsTopicSubscription() async {
     if (!newsTopic) {
       await FirebaseMessaging.instance.subscribeToTopic("News");
@@ -154,6 +162,7 @@ class NewsProvider with ChangeNotifier {
 
   Future<void> technologyTopicSubscription() async {
     if (!technologyTopic) {
+      print(technologyTopic);
       await FirebaseMessaging.instance.subscribeToTopic("Technology");
       notifyListeners();
     } else {
@@ -173,11 +182,14 @@ class NewsProvider with ChangeNotifier {
   }
 
   Future<void> carsTopicSubscription() async {
-    if (!carsTopic) {
+    if (carsTopic == false) {
+      print(carsTopic);
       await FirebaseMessaging.instance.subscribeToTopic('Cars');
       notifyListeners();
-    } else {
-      await FirebaseMessaging.instance.unsubscribeFromTopic("cars");
+    } else if(carsTopic == true) {
+      print(carsTopic);
+
+      await FirebaseMessaging.instance.unsubscribeFromTopic("Cars");
       notifyListeners();
     }
   }
