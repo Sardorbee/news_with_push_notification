@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Provider.of<NewsProvider>(context, listen: false)
                       .deleteNews(news.publishedAt);
                 },
-                leading: Image.network(news.imageUrl),
+                leading: InteractiveViewer(child: Image.network(news.imageUrl)),
                 title: Text(news.title),
                 subtitle: Text(news.author),
               );

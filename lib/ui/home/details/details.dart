@@ -16,7 +16,9 @@ class DetailsScreen extends StatelessWidget {
         child: Column(
           children: [
             fcmResponseModel?.imageUrl != null
-                ? Image.network(fcmResponseModel!.imageUrl)
+                ? InteractiveViewer(
+                  scaleEnabled: true,
+                  child: Image.network(fcmResponseModel!.imageUrl))
                 : const Placeholder(),
             Text(fcmResponseModel?.title ?? ''),
             Text(fcmResponseModel?.author ?? ''),
