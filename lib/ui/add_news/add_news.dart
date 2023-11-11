@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:news_with_push_notification/provider/news_provider.dart';
+import 'package:news_with_push_notification/bloc/notification_send/notification_bloc.dart';
+import 'package:news_with_push_notification/services/models/notification_fields/notify_fields.dart';
 import 'package:news_with_push_notification/ui/add_news/widgets/popup_menu_button.dart';
 import 'package:news_with_push_notification/ui/ui_utils/text_field.dart';
 import 'package:provider/provider.dart';
 
 class AddNews extends StatefulWidget {
-  AddNews({super.key, required this.callback});
-  VoidCallback callback;
+  const AddNews({
+    super.key,
+  });
 
   @override
   State<AddNews> createState() => _AddNewsState();
@@ -20,7 +22,6 @@ class _AddNewsState extends State<AddNews> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        context.read<NewsProvider>().tozalash();
         return true;
       },
       child: Scaffold(
@@ -32,8 +33,6 @@ class _AddNewsState extends State<AddNews> {
           ),
           leading: IconButton(
             onPressed: () {
-              context.read<NewsProvider>().tozalash();
-
               Navigator.pop(context);
             },
             icon: const Icon(
@@ -52,14 +51,22 @@ class _AddNewsState extends State<AddNews> {
                     items: const ['News', 'Technology', 'Medicine', 'Cars'],
                     initialValue: "Select a Topic",
                     onChanged: (String newValue) {
-                      print('Selected: $newValue');
+                      context.read<NotificationBloc>().updateWebsiteField(
+                          fieldKey: NotificationFileds.to,
+                          value: "/topics/$newValue");
+                      debugPrint('Selected: $newValue');
                     },
                   ),
                   const SizedBox(height: 10),
                   GlobalTextField(
                     hintText: "Add News title",
                     textAlign: TextAlign.start,
-                    controller: context.read<NewsProvider>().titleController,
+                    onChanged: (value) {
+                      context.read<NotificationBloc>().updateWebsiteField(
+                          fieldKey: NotificationFileds.title, value: value);
+                      context.read<NotificationBloc>().updateWebsiteField(
+                          fieldKey: NotificationFileds.title2, value: value);
+                    },
                     label: 'title',
                   ),
                   const SizedBox(height: 10),
@@ -67,15 +74,21 @@ class _AddNewsState extends State<AddNews> {
                     hintText: "Add News author",
                     textAlign: TextAlign.start,
                     keyboardType: TextInputType.text,
-                    controller: context.read<NewsProvider>().authorController,
+                    onChanged: (value) => context
+                        .read<NotificationBloc>()
+                        .updateWebsiteField(
+                            fieldKey: NotificationFileds.author, value: value),
                     label: 'Author',
                   ),
                   const SizedBox(height: 10),
                   GlobalTextField(
                     hintText: "Add News description",
                     textAlign: TextAlign.start,
-                    controller:
-                        context.read<NewsProvider>().descriptionController,
+                    onChanged: (value) => context
+                        .read<NotificationBloc>()
+                        .updateWebsiteField(
+                            fieldKey: NotificationFileds.description,
+                            value: value),
                     label: 'Description',
                   ),
                   const SizedBox(height: 10),
@@ -84,7 +97,10 @@ class _AddNewsState extends State<AddNews> {
                     keyboardType: TextInputType.text,
                     hintText: "Add News Content",
                     textAlign: TextAlign.start,
-                    controller: context.read<NewsProvider>().contentController,
+                    onChanged: (value) => context
+                        .read<NotificationBloc>()
+                        .updateWebsiteField(
+                            fieldKey: NotificationFileds.content, value: value),
                     label: 'Content',
                   ),
                   const SizedBox(height: 10),
@@ -95,7 +111,13 @@ class _AddNewsState extends State<AddNews> {
                     onPressed: () async {
                       showBottomSheetDialog(context);
                     },
-                    child: context.watch<NewsProvider>().imageUrl.isEmpty
+                    child: context
+                            .watch<NotificationBloc>()
+                            .state
+                            .allDataFromNotify
+                            .fcmResponseModel
+                            .imageUrl
+                            .isEmpty
                         ? const Text(
                             "Select Image",
                             style: TextStyle(color: Colors.white),
@@ -104,31 +126,23 @@ class _AddNewsState extends State<AddNews> {
                           )
                         : SizedBox(
                             height: 100,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                ...List.generate(
-                                    context
-                                        .watch<NewsProvider>()
-                                        .imageUrl
-                                        .length, (index) {
-                                  String singleImage =
-                                      context.watch<NewsProvider>().imageUrl;
-                                  return Container(
-                                    padding: const EdgeInsets.all(5),
-                                    margin: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Image.network(
-                                      singleImage,
-                                      width: 80,
-                                      height: 80,
-                                      fit: BoxFit.fill,
-                                    ),
-                                  );
-                                })
-                              ],
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              margin: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Image.network(
+                                context
+                                    .watch<NotificationBloc>()
+                                    .state
+                                    .allDataFromNotify
+                                    .fcmResponseModel
+                                    .imageUrl,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.fill,
+                              ),
                             ),
                           ),
                   ),
@@ -136,7 +150,13 @@ class _AddNewsState extends State<AddNews> {
               ),
             ),
             Visibility(
-              visible: context.watch<NewsProvider>().imageUrl.isNotEmpty,
+              visible: context
+                  .watch<NotificationBloc>()
+                  .state
+                  .allDataFromNotify
+                  .fcmResponseModel
+                  .imageUrl
+                  .isNotEmpty,
               child: SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -165,11 +185,14 @@ class _AddNewsState extends State<AddNews> {
                         backgroundColor: MaterialStatePropertyAll(Colors.green),
                       ),
                       onPressed: () {
-                        context.read<NewsProvider>().sendNotification();
-                        widget.callback.call();
-                        Navigator.pop(context);
+                        context
+                            .read<NotificationBloc>()
+                            .add(SendNotification());
+                        context
+                            .read<NotificationBloc>()
+                            .add(FetchLocalNotification());
 
-                        context.read<NewsProvider>().tozalash();
+                        Navigator.pop(context);
                       },
                       child: const Text("Send News"))),
             ),
@@ -226,7 +249,9 @@ class _AddNewsState extends State<AddNews> {
 
     if (context.mounted) {
       if (xFile != null) {
-        await context.read<NewsProvider>().uploadCategoryImage(context, xFile);
+        await context
+            .read<NotificationBloc>()
+            .uploadCategoryImage(context, xFile);
       }
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
@@ -241,7 +266,9 @@ class _AddNewsState extends State<AddNews> {
     );
     if (context.mounted) {
       if (xFile != null) {
-        await context.read<NewsProvider>().uploadCategoryImage(context, xFile);
+        await context
+            .read<NotificationBloc>()
+            .uploadCategoryImage(context, xFile);
       }
       // ignore: use_build_context_synchronously
       Navigator.pop(context);

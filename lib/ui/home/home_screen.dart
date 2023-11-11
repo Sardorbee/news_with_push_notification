@@ -1,62 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:news_with_push_notification/provider/news_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_with_push_notification/bloc/notification_send/notification_bloc.dart';
 import 'package:news_with_push_notification/services/models/fcm_response_model.dart';
 import 'package:news_with_push_notification/ui/add_news/add_news.dart';
 import 'package:news_with_push_notification/ui/home/details/details.dart';
-import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    context.read<NewsProvider>().subscribeAll();
-    super.initState();
-  }
-  @override
   Widget build(BuildContext context) {
+    print('build');
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           "Morning Star",
         ),
-      ),
-      body: Consumer<NewsProvider>(
-        builder: (context, newsProvider, _) {
-          newsProvider.fetchData();
-          final newsData = newsProvider.newsData;
-
-          if (newsData.isEmpty) {
-            return const Center(child: Text('No results found'));
-          }
-
-          return ListView.builder(
-            itemCount: newsData.length,
-            itemBuilder: (BuildContext context, int index) {
-              FcmResponseModel news = newsData[index];
-
-              return ListTile(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          DetailsScreen(fcmResponseModel: news),
-                    )),
-                onLongPress: () {
-                  Provider.of<NewsProvider>(context, listen: false)
-                      .deleteNews(news.publishedAt);
-                },
-                leading: InteractiveViewer(child: Image.network(news.imageUrl)),
-                title: Text(news.title),
-                subtitle: Text(news.author),
-              );
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.read<NotificationBloc>().add(FetchLocalNotification());
             },
-          );
+            icon: Icon(
+              Icons.refresh,
+            ),
+          ),
+        ],
+      ),
+      body: BlocBuilder<NotificationBloc, NotificationState>(
+        builder: (context, state) {
+          if (state.data!.isNotEmpty) {
+            return ListView.builder(
+              itemCount: state.data!.length,
+              itemBuilder: (BuildContext context, int index) {
+                FcmResponseModel news = state.data![index];
+
+                return ListTile(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DetailsScreen(fcmResponseModel: news),
+                      )),
+                  onLongPress: () {
+                    context
+                        .read<NotificationBloc>()
+                        .deleteNews(news.publishedAt);
+                  },
+                  leading:
+                      InteractiveViewer(child: Image.network(news.imageUrl)),
+                  title: Text(news.title),
+                  subtitle: Text(news.author),
+                );
+              },
+            );
+          } else {
+            return const Center(
+              child: Text('You have no notifications yet'),
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -64,11 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddNews(
-                  callback: () {
-                    setState(() {});
-                  },
-                ),
+                builder: (context) => const AddNews(),
               ));
         },
         child: const Icon(Icons.add),

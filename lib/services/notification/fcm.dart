@@ -4,9 +4,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:news_with_push_notification/services/local/sqsl_database.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_with_push_notification/bloc/notification_send/notification_bloc.dart';
+import 'package:news_with_push_notification/services/local/sql_database.dart';
 import 'package:news_with_push_notification/services/models/fcm_response_model.dart';
 import 'package:news_with_push_notification/services/notification/local_notification.dart';
+import 'package:path/path.dart';
 
 Future<void> initFirebase() async {
   await Firebase.initializeApp();
@@ -16,6 +19,7 @@ Future<void> initFirebase() async {
 
   // FOREGROUND MESSAGE HANDLING.
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+
     debugPrint(
         "NOTIFICATION FOREGROUND MODE: ${message.notification!.title} in foreground");
     // LocalNotificationService.instance.showFlutterNotification(message);
@@ -24,7 +28,7 @@ Future<void> initFirebase() async {
         .showRemoteNotification(message);
     print(news.newsID);
 
-    DatabaseHelper.instance.insertProduct(
+    DatabaseHelper.instance.insertNotification(
       FcmResponseModel(
         author: news.author,
         newsID: news.newsID,
@@ -49,7 +53,7 @@ Future<void> initFirebase() async {
     LocalNotificationService.localNotificationService
         .showRemoteNotification(message);
     FcmResponseModel news = FcmResponseModel.fromJson(message.data);
-    DatabaseHelper.instance.insertProduct(
+    DatabaseHelper.instance.insertNotification(
       FcmResponseModel(
         author: news.author,
         newsID: DateTime.now().toString(),
@@ -77,7 +81,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   LocalNotificationService.localNotificationService
       .showRemoteNotification(message);
   FcmResponseModel news = FcmResponseModel.fromJson(message.data);
-  DatabaseHelper.instance.insertProduct(
+  DatabaseHelper.instance.insertNotification(
     FcmResponseModel(
       author: news.author,
       newsID: DateTime.now().toString(),

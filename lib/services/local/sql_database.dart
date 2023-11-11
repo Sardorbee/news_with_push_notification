@@ -77,7 +77,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<void> insertProduct(FcmResponseModel news) async {
+  Future<void> insertNotification(FcmResponseModel news) async {
     final db = await database;
     await db.insert('news', news.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);

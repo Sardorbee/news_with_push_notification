@@ -1,41 +1,43 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:news_with_push_notification/provider/news_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_with_push_notification/cubit/tab_cubit/tab_cubit.dart';
+import 'package:news_with_push_notification/ui/home/home_screen.dart';
+import 'package:news_with_push_notification/ui/profile/profile_screen.dart';
+
 
 class TabBarScreen extends StatelessWidget {
-  const TabBarScreen({super.key});
+   TabBarScreen({super.key});
+
+
+ final List<Widget> screens = [
+    const HomeScreen(),
+    const ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    
 
-    print('build');
-    return Consumer<NewsProvider>(
-      builder: (context, NewsProvider, _) {
-        return Scaffold(
-          body: IndexedStack(
-            index: NewsProvider.currentIndex,
-            children: NewsProvider.screens,
+    return Scaffold(
+      body: IndexedStack(
+        index: context.watch<TabCubit>().state,
+        children: screens,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: context.watch<TabCubit>().state,
+        onTap: (index) {
+          context.read<TabCubit>().changeTabIndex(index);
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: NewsProvider.currentIndex,
-            onTap: (index) {
-              NewsProvider.updateTabBarsIndex(index);
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

@@ -38,7 +38,7 @@ class _MyPopupMenuButtonState extends State<MyPopupMenuButton> {
         setState(() {
           _selectedValue = value;
         });
-        context.read<NewsProvider>().updateSelectedTopic(value);
+
         widget.onChanged(value);
       },
       itemBuilder: (BuildContext context) {

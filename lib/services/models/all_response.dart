@@ -1,15 +1,5 @@
-// To parse this JSON data, do
-//
-//     final fcmResponseModel = fcmResponseModelFromJson(jsonString);
-
-import 'dart:convert';
-
 import 'package:news_with_push_notification/services/models/fcm_response_model.dart';
 import 'package:news_with_push_notification/services/models/notify_model.dart';
-
-AlldataFromnotify fcmResponseModelFromJson(String str) => AlldataFromnotify.fromJson(json.decode(str));
-
-String fcmResponseModelToJson(AlldataFromnotify data) => json.encode(data.toJson());
 
 class AlldataFromnotify {
     String to;
@@ -21,6 +11,18 @@ class AlldataFromnotify {
         required this.notification,
         required this.fcmResponseModel,
     });
+
+    AlldataFromnotify copyWith({
+        String? to,
+        NotifyModel? notification,
+        FcmResponseModel? fcmResponseModel,
+    }) {
+        return AlldataFromnotify(
+            to: to ?? this.to,
+            notification: notification ?? this.notification,
+            fcmResponseModel: fcmResponseModel ?? this.fcmResponseModel,
+        );
+    }
 
     factory AlldataFromnotify.fromJson(Map<String, dynamic> json) => AlldataFromnotify(
         to: json["to"],
@@ -34,5 +36,3 @@ class AlldataFromnotify {
         "data": fcmResponseModel.toJson(),
     };
 }
-
-

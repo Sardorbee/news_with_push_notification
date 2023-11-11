@@ -11,17 +11,18 @@ class GlobalTextField extends StatelessWidget {
     required this.textAlign,
     this.obscureText = false,
     this.maxLines = 1,
-    required this.controller,
+    this.controller,
     required this.label,
+    required this.onChanged,
   }) : super(key: key);
-
+  final ValueChanged onChanged;
   final String hintText;
   int? maxLines;
   TextInputType? keyboardType;
   TextInputAction? textInputAction;
   TextAlign textAlign;
   final bool obscureText;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String label;
 
   @override
@@ -30,10 +31,13 @@ class GlobalTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label),
-        SizedBox(height: 15,),
+        SizedBox(
+          height: 15,
+        ),
         SizedBox(
           // height: 55.h,
           child: TextField(
+            onChanged: onChanged,
             maxLines: maxLines,
             style: TextStyle(
                 fontSize: 16,
@@ -92,7 +96,9 @@ class GlobalTextField extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 18,),
+        SizedBox(
+          height: 18,
+        ),
       ],
     );
   }

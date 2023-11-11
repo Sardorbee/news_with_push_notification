@@ -52,7 +52,7 @@ class LocalNotificationService {
 
           Navigator.push(navigatorKey.currentContext!,
               MaterialPageRoute(builder: (context) {
-            return  DetailsScreen( );
+            return  DetailsScreen();
           }));
 
           debugPrint('PAYLOAD RESULT------> ${notificationResponse.payload}');
